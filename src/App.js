@@ -130,6 +130,10 @@ function createItem(item_name, unit, quantity_remaining, low_quantity_threshold,
   return { item_name, unit, quantity_remaining, low_quantity_threshold, store };
 }
 
+function isMobileDevice() {
+  return (typeof window.orientation !== "undefined") || (navigator.userAgent.indexOf('IEMobile') !== -1);
+};
+
 export default function AppShell() {
   return (<HomePage />);
 }
@@ -144,9 +148,9 @@ function HomePage() {
     setAddItemDialogStatus(false);
   };
   get("items").then((val) =>
-    setItems(val == undefined ? [] : val)
+    setItems(val === undefined ? [] : val)
   );
-
+  // isMobileDevice() ? console.log('True') : console.log('False');
   return (
     <ThemeProvider theme={theme}>
       <AppBar position="static" className={clsx(classes.appBar, {
@@ -205,13 +209,13 @@ function HomePage() {
 }
 
 function PageContent(props) {
-  if (props.page == "Stock") {
+  if (props.page === "Stock") {
     return <StockPage isMenuBarShown={props.isMenuBarShown} items={props.items} />;
-  } else if (props.page == "Items") {
+  } else if (props.page === "Items") {
     return <ItemsPage isMenuBarShown={props.isMenuBarShown} />
-  } else if (props.page == "Stores") {
+  } else if (props.page === "Stores") {
     return <StoresPage isMenuBarShown={props.isMenuBarShown} />
-  } else if (props.page == "ShoppingCart") {
+  } else if (props.page === "ShoppingCart") {
     return <ShoppingCartPage isMenuBarShown={props.isMenuBarShown} />
   }
 }
@@ -286,7 +290,7 @@ function AddItemDialog(props) {
     } else {
       props.onClose()
       get("items").then((val) => {
-        if ((val == undefined) || (val.length == 0)) {
+        if ((val === undefined) || (val.length === 0)) {
           set("items", [
             createItem(itemName, unit, quantityInHand, quantityLowThreshold, store),
           ]);
